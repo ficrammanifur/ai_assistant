@@ -120,7 +120,7 @@ graph TB
 ### 1. Clone or Download Project
 ```bash
 # If using git
-git clone <your-repo-url>
+git clone https://github.com/ficrammanifur/ai_assistant
 cd raspberry-pi-ai-assistant
 
 # Or download and extract the ZIP file
