@@ -1,4 +1,27 @@
-# AI Assistant for Raspberry Pi 5
+# 🤖 AI ASSISTANT FOR RASPBERRY PI 5
+
+<p align="center">
+  <img src="/placeholder.svg?height=400&width=700" alt="AI Assistant Prototype" width="700"/>
+</p>
+
+<p align="center">
+  <em>Sistem AI Assistant komprehensif yang berjalan di Raspberry Pi 5 dengan multiple interface: web browser, terminal, dan ekspresi OLED display.</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/last%20commit-today-brightgreen" />
+  <img src="https://img.shields.io/badge/language-Python-blue" />
+  <img src="https://img.shields.io/badge/platform-Raspberry%20Pi%205-informational" />
+  <img src="https://img.shields.io/badge/framework-Flask-orange" />
+  <img src="https://img.shields.io/badge/AI-Hugging%20Face-yellow" />
+  <img src="https://img.shields.io/badge/display-OLED%20SSD1306-red" />
+  <img src="https://img.shields.io/badge/interface-Web%20%7C%20Terminal-green" />
+  <a href="https://github.com/your-username/raspberry-pi-ai-assistant/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT" />
+  </a>
+</p>
+
+---
 
 A comprehensive AI Assistant project that runs on Raspberry Pi 5 with multiple interfaces: web browser, terminal, and OLED display expressions.
 
@@ -25,6 +48,60 @@ A comprehensive AI Assistant project that runs on Raspberry Pi 5 with multiple i
 - **Thinking**: Blinking eyes with dots
 - **Speaking**: Normal eyes, smiling mouth
 
+## Use Case Diagram
+
+```mermaid
+graph TB
+    User((User))
+    RPi[Raspberry Pi 5]
+    WebBrowser[Web Browser]
+    Terminal[Terminal Interface]
+    OLED[OLED Display]
+    AI[AI Model]
+    
+    User -->|Types message| WebBrowser
+    User -->|Voice input| WebBrowser
+    User -->|Types command| Terminal
+    
+    WebBrowser -->|HTTP Request| RPi
+    Terminal -->|Direct input| RPi
+    
+    RPi -->|Process message| AI
+    AI -->|Generate response| RPi
+    
+    RPi -->|Display expression| OLED
+    RPi -->|Send response| WebBrowser
+    RPi -->|Print response| Terminal
+    
+    OLED -->|Visual feedback| User
+    WebBrowser -->|Chat interface| User
+    Terminal -->|Text output| User
+    
+    subgraph "AI Assistant System"
+        RPi
+        AI
+        OLED
+    end
+    
+    subgraph "User Interfaces"
+        WebBrowser
+        Terminal
+    end
+```
+
+### System Interactions
+
+| Actor | Use Cases | Description |
+|-------|-----------|-------------|
+| **User** | Chat via Web | Access web interface, send messages, receive responses |
+| **User** | Chat via Terminal | Use command-line interface for direct interaction |
+| **User** | Voice Input | Speak to microphone through web browser |
+| **Raspberry Pi** | Process Messages | Handle requests, manage AI model, coordinate responses |
+| **AI Model** | Generate Responses | Process user input and generate intelligent replies |
+| **OLED Display** | Show Expressions | Display facial expressions based on system state |
+| **Web Browser** | Provide Interface | Render chat UI, handle voice input, display responses |
+| **Terminal** | Command Interface | Accept text input, display AI responses |
+
 ## Hardware Requirements
 
 - Raspberry Pi 5 (4GB+ RAM recommended)
@@ -41,22 +118,22 @@ A comprehensive AI Assistant project that runs on Raspberry Pi 5 with multiple i
 ## Installation
 
 ### 1. Clone or Download Project
-\`\`\`bash
+```bash
 # If using git
 git clone <your-repo-url>
 cd raspberry-pi-ai-assistant
 
 # Or download and extract the ZIP file
-\`\`\`
+```
 
 ### 2. Run Setup Script
-\`\`\`bash
+```bash
 chmod +x setup.sh
 ./setup.sh
-\`\`\`
+```
 
 ### 3. Manual Installation (Alternative)
-\`\`\`bash
+```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
 
@@ -73,43 +150,42 @@ sudo raspi-config
 # Create virtual environment
 python3 -m venv ai_assistant_env
 source ai_assistant_env/bin/activate
-source /home/debian/Project/ai_assistant_env/bin/activate
 
 # Install Python dependencies
 pip install -r requirements.txt
 
 # Test OLED connection (optional)
 sudo i2cdetect -y 1
-\`\`\`
+```
 
 ## Hardware Setup
 
 ### OLED Display Wiring (SSD1306 128x64)
-\`\`\`
+```
 OLED Pin  ->  Raspberry Pi Pin
 VCC       ->  3.3V (Pin 1)
 GND       ->  Ground (Pin 6)
 SDA       ->  GPIO 2 (Pin 3)
 SCL       ->  GPIO 3 (Pin 5)
-\`\`\`
+```
 
 ### Enable I2C
-\`\`\`bash
+```bash
 sudo raspi-config
 # Interface Options > I2C > Enable
 sudo reboot
-\`\`\`
+```
 
 ## Usage
 
 ### Start the AI Assistant
-\`\`\`bash
+```bash
 # Activate virtual environment
 source ai_assistant_env/bin/activate
 
 # Run the application
 python app.py
-\`\`\`
+```
 
 ### Access Methods
 
@@ -139,9 +215,9 @@ python app.py
 - Default model: `distilgpt2` (lightweight)
 - Models cached in: `./models/`
 - Change model in `app.py`:
-\`\`\`python
+```python
 model_name = "distilgpt2"  # Change to other compatible models
-\`\`\`
+```
 
 ### OLED Configuration
 - Default size: 128x64
@@ -158,7 +234,7 @@ model_name = "distilgpt2"  # Change to other compatible models
 ### Common Issues
 
 **1. OLED Display Not Working**
-\`\`\`bash
+```bash
 # Check I2C connection
 sudo i2cdetect -y 1
 # Should show device at 0x3C
@@ -166,7 +242,7 @@ sudo i2cdetect -y 1
 # Check I2C is enabled
 sudo raspi-config
 # Interface Options > I2C > Enable
-\`\`\`
+```
 
 **2. AI Model Loading Slowly**
 - First run downloads ~250MB model
@@ -179,12 +255,12 @@ sudo raspi-config
 - Ensure microphone is connected
 
 **4. Permission Errors**
-\`\`\`bash
+```bash
 # Fix GPIO permissions
 sudo usermod -a -G gpio $USER
 sudo usermod -a -G i2c $USER
 # Logout and login again
-\`\`\`
+```
 
 **5. Memory Issues**
 - Use Raspberry Pi 5 with 4GB+ RAM
@@ -208,7 +284,7 @@ sudo usermod -a -G i2c $USER
 
 ## File Structure
 
-\`\`\`
+```
 raspberry-pi-ai-assistant/
 ├── app.py                 # Main Flask application
 ├── oled_display.py        # OLED display controller
@@ -222,7 +298,7 @@ raspberry-pi-ai-assistant/
 │   └── script.js         # Web interface JavaScript
 ├── models/               # AI models cache (created automatically)
 └── data/                 # Optional chat data storage
-\`\`\`
+```
 
 ## API Endpoints
 
@@ -257,3 +333,11 @@ For issues and questions:
 ## Contributing
 
 Contributions welcome! Please test on Raspberry Pi 5 before submitting.
+
+---
+<div align="center">
+
+**⭐ Star this repo if you like it!**
+
+<p><a href="#top">⬆ Back on Top</a></p>
+</div>
