@@ -1,7 +1,7 @@
 # 🤖 AI ASSISTANT FOR RASPBERRY PI 5
 
 <p align="center">
-  <img src="/placeholder.svg?height=400&width=700" alt="AI Assistant Prototype" width="700"/>
+  <img src="assets/interface.png" alt="AI Assistant Prototype" width="700"/>
 </p>
 
 <p align="center">
