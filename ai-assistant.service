@@ -1,0 +1,14 @@
+[Unit]
+Description=AI Assistant for Raspberry Pi
+After=network.target
+
+[Service]
+Type=simple
+User=debian
+WorkingDirectory=/home/debian/Project
+Environment=PATH=/home/debian/Project/ai_assistant_env/bin
+ExecStart=/home/debian/Project/ai_assistant_env/bin/python app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

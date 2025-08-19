@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Raspberry Pi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🤖 AI Assistant</h1>
+            <p>Raspberry Pi 5 AI Assistant with Voice Input</p>
+            <div class="status-indicator">
+                <span id="status-dot" class="status-dot"></span>
+                <span id="status-text">Connecting...</span>
+            </div>
+        </header>
+
+        <div class="chat-container">
+            <div id="chat-messages" class="chat-messages">
+                <div class="message assistant-message">
+                    <div class="message-content">
+                        <strong>AI Assistant:</strong> Hello! I'm your AI assistant running on Raspberry Pi 5. How can I help you today?
+                    </div>
+                    <div class="message-time" id="initial-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-group">
+                <input type="text" id="message-input" placeholder="Type your message here..." autocomplete="off">
+                <button id="mic-button" class="mic-button" title="Voice Input">
+                    <span class="mic-icon">🎤</span>
+                </button>
+                <button id="send-button" class="send-button" title="Send Message">
+                    <span class="send-icon">➤</span>
+                </button>
+            </div>
+            <div id="voice-status" class="voice-status"></div>
+        </div>
+
+        <div class="controls">
+            <button id="clear-chat" class="control-button">Clear Chat</button>
+            <button id="toggle-voice" class="control-button">Toggle Voice</button>
+            <button id="system-status" class="control-button">System Status</button>
+        </div>
+    </div>
+
+    <div id="loading" class="loading hidden">
+        <div class="loading-spinner"></div>
+        <p>AI is thinking...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
