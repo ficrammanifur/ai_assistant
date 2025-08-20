@@ -2,17 +2,18 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/language-Python-blue" />
-  <img src="https://img.shields.io/badge/platform-Raspberry%20Pi%205-informational" />
+  <img src="https://img.shields.io/badge/platform-Raspberry%20Pi-informational" />
   <img src="https://img.shields.io/badge/framework-Flask-orange" />
-  <img src="https://img.shields.io/badge/AI-Hugging%20Face-yellow" />
+  <img src="https://img.shields.io/badge/AI-TinyLlama-yellow" />
   <img src="https://img.shields.io/badge/display-OLED%20SSD1306-red" />
   <img src="https://img.shields.io/badge/interface-Web%20%7C%20Terminal-green" />
-  <a href="https://github.com/your-username/raspberry-pi-ai-assistant/blob/main/LICENSE">
+  <a href="https://github.com/ficrammanifur/raspberry-pi-ai-assistant/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT" />
   </a>
+</p>
 
 <p align="center">
-  <em>A comprehensive AI Assistant project that runs on Raspberry Pi 5 with multiple interfaces: web browser, terminal, and OLED display expressions.</em>
+  <em>A lightweight AI Assistant running on Raspberry Pi with web and terminal interfaces, OLED display expressions, and typo correction for robust interaction.</em>
 </p>
   
 </p>
@@ -21,7 +22,7 @@
 </p>
 
 <p align="center">
-  <em>Sistem AI Assistant komprehensif yang berjalan di Raspberry Pi 5 dengan multiple interface: web browser, terminal, dan ekspresi OLED display.</em>
+  <em>Sistem AI Assistant ringan yang berjalan di Raspberry Pi dengan antarmuka web dan terminal, ekspresi OLED display, serta koreksi ejaan untuk interaksi yang lebih baik.</em>
 </p>
 
 ---
@@ -29,19 +30,22 @@
 ## Features
 
 ### 🤖 AI Integration
-- Lightweight AI model (DistilGPT-2) from Hugging Face
-- Offline capability with local model caching
-- Fallback responses when model is unavailable
+- Lightweight AI model (TinyLlama-1.1B-Chat) using llama-cpp-python
+- Offline capability with local model caching in `./models/`
+- Fallback responses from `prompts.json` when model struggles
+- Support for typo correction using pyspellchecker with a custom Indonesian word list
+- Planned support for LLaMA 3 (1B or 8B, quantized)
 
 ### 🖥️ Multiple Interfaces
-- **Web Interface**: Modern chat UI with voice input support
-- **Terminal Interface**: Command-line chat experience
+- **Web Interface**: Modern chat UI accessible via browser
+- **Terminal Interface**: Command-line interaction for direct input
 - **OLED Display**: Animated facial expressions (128x64 SSD1306)
 
-### 🎤 Voice Input
-- Browser-based speech-to-text
-- Real-time voice recognition
-- Visual feedback during recording
+### 📚 Database
+- Stores predefined prompts and responses in `prompts.json`
+- Saves chat history in `history.json`
+- Manages user data in `users.json`
+- Custom Indonesian word list (`id_words.txt`) for spell correction
 
 ### 📱 OLED Expressions
 - **Idle**: Normal eyes, straight mouth
@@ -52,36 +56,38 @@
 ### Pin Connections
 
 For this project, the primary hardware connection is the SSD1306 OLED display via I2C:
-- **VCC**: Connect to Pin 1 (3.3V) for power.
-- **GND**: Connect to Pin 6 (Ground).
-- **SDA**: Connect to Pin 3 (GPIO 2) for I2C data.
-- **SCL**: Connect to Pin 5 (GPIO 3) for I2C clock.
+- **VCC**: Connect to Pin 1 (3.3V) for power
+- **GND**: Connect to Pin 6 (Ground)
+- **SDA**: Connect to Pin 3 (GPIO 2) for I2C data
+- **SCL**: Connect to Pin 5 (GPIO 3) for I2C clock
 
 **Additional Notes**:
-- Ensure secure connections to avoid I2C communication issues.
-- Verify the I2C address (default: 0x3C) using `sudo i2cdetect -y 1`.
-- If using additional peripherals (e.g., microphone), ensure they do not conflict with I2C pins.
+- Ensure secure connections to avoid I2C communication issues
+- Verify the I2C address (default: 0x3C) using `sudo i2cdetect -y 1`
+- No additional peripherals (e.g., microphone) are currently used
 
 ## Use Case Diagram
 
 ```mermaid
 graph TB
     User((User))
-    RPi[Raspberry Pi 5]
+    RPi[Raspberry Pi]
     WebBrowser[Web Browser]
     Terminal[Terminal Interface]
     OLED[OLED Display]
     AI[AI Model]
+    DB[Database]
     
     User -->|Types message| WebBrowser
-    User -->|Voice input| WebBrowser
     User -->|Types command| Terminal
     
     WebBrowser -->|HTTP Request| RPi
     Terminal -->|Direct input| RPi
     
     RPi -->|Process message| AI
+    RPi -->|Check/Fetch| DB
     AI -->|Generate response| RPi
+    DB -->|Provide response| RPi
     
     RPi -->|Display expression| OLED
     RPi -->|Send response| WebBrowser
@@ -94,6 +100,7 @@ graph TB
     subgraph "AI Assistant System"
         RPi
         AI
+        DB
         OLED
     end
     
@@ -109,11 +116,11 @@ graph TB
 |-------|-----------|-------------|
 | **User** | Chat via Web | Access web interface, send messages, receive responses |
 | **User** | Chat via Terminal | Use command-line interface for direct interaction |
-| **User** | Voice Input | Speak to microphone through web browser |
-| **Raspberry Pi** | Process Messages | Handle requests, manage AI model, coordinate responses |
-| **AI Model** | Generate Responses | Process user input and generate intelligent replies |
+| **Raspberry Pi** | Process Messages | Handle requests, correct typos, manage AI model, query database |
+| **AI Model** | Generate Responses | Process corrected user input and generate intelligent replies |
+| **Database** | Store/Retrieve Data | Save chat history, provide predefined responses, store user data |
 | **OLED Display** | Show Expressions | Display facial expressions based on system state |
-| **Web Browser** | Provide Interface | Render chat UI, handle voice input, display responses |
+| **Web Browser** | Provide Interface | Render chat UI, display responses |
 | **Terminal** | Command Interface | Accept text input, display AI responses |
 
 ## 🔧 Hardware Requirements
