@@ -49,57 +49,6 @@
 - **Thinking**: Blinking eyes with dots
 - **Speaking**: Normal eyes, smiling mouth
 
-## Raspberry Pi 5 Pinout
-
-The Raspberry Pi 5 uses a 40-pin GPIO header, compatible with previous Raspberry Pi models but with enhanced capabilities. Below is the pinout for reference, focusing on the pins relevant to this AI Assistant project (e.g., I2C for OLED display). The pinout is described based on the physical pin numbering.
-
-| Pin # | Name        | Description                              | Pin # | Name        | Description                              |
-|-------|-------------|------------------------------------------|-------|-------------|------------------------------------------|
-| 1     | 3.3V        | 3.3V Power                               | 2     | 5V          | 5V Power                                 |
-| 3     | GPIO 2 (SDA)| I2C SDA (Used for OLED)                  | 4     | 5V          | 5V Power                                 |
-| 5     | GPIO 3 (SCL)| I2C SCL (Used for OLED)                  | 6     | GND         | Ground                                   |
-| 7     | GPIO 4      | General Purpose I/O                      | 8     | GPIO 14     | UART TXD                                 |
-| 9     | GND         | Ground                                   | 10    | GPIO 15     | UART RXD                                 |
-| 11    | GPIO 17     | General Purpose I/O                      | 12    | GPIO 18     | PCM Clock (Audio)                        |
-| 13    | GPIO 27     | General Purpose I/O                      | 14    | GND         | Ground                                   |
-| 15    | GPIO 22     | General Purpose I/O                      | 16    | GPIO 23     | General Purpose I/O                      |
-| 17    | 3.3V        | 3.3V Power                               | 18    | GPIO 24     | General Purpose I/O                      |
-| 19    | GPIO 10     | SPI MOSI                                 | 20    | GND         | Ground                                   |
-| 21    | GPIO 9      | SPI MISO                                 | 22    | GPIO 25     | General Purpose I/O                      |
-| 23    | GPIO 11     | SPI SCLK                                 | 24    | GPIO 8      | SPI CE0                                  |
-| 25    | GND         | Ground                                   | 26    | GPIO 7      | SPI CE1                                  |
-| 27    | GPIO 0 (ID_SD)| EEPROM I2C SDA                         | 28    | GPIO 1 (ID_SC)| EEPROM I2C SCL                         |
-| 29    | GPIO 5      | General Purpose I/O                      | 30    | GND         | Ground                                   |
-| 31    | GPIO 6      | General Purpose I/O                      | 32    | GPIO 12     | PWM0                                     |
-| 33    | GPIO 13     | PWM1                                     | 34    | GND         | Ground                                   |
-| 35    | GPIO 19     | PCM Frame Sync                           | 36    | GPIO 16     | General Purpose I/O                      |
-| 37    | GPIO 26     | General Purpose I/O                      | 38    | GPIO 20     | PCM Data In                              |
-| 39    | GND         | Ground                                   | 40    | GPIO 21     | PCM Data Out                             |
-
-**Key Notes**:
-- **I2C Pins**: Pin 3 (GPIO 2, SDA) and Pin 5 (GPIO 3, SCL) are used for the SSD1306 OLED display in this project.
-- **Power Pins**: Pins 1 and 17 provide 3.3V, while Pins 2 and 4 provide 5V. The OLED VCC can connect to 3.3V (Pin 1).
-- **Ground Pins**: Multiple ground pins (6, 9, 14, 20, 25, 30, 34, 39) are available; Pin 6 is typically used for the OLED GND.
-- **GPIO Limitations**: The Raspberry Pi 5 supports up to 3.3V logic levels. Use level shifters for 5V devices.
-- **I2C Configuration**: Enable I2C via `sudo raspi-config` as described in the **Hardware Setup** section.
-
-### Schematic/Wiring Diagram
-
-The wiring for the SSD1306 OLED display is as follows:
-OLED Pin  ->  Raspberry Pi Pin
-VCC       ->  Pin 1 (3.3V)
-GND       ->  Pin 6 (Ground)
-SDA       ->  Pin 3 (GPIO 2, I2C SDA)
-SCL       ->  Pin 5 (GPIO 3, I2C SCL)
-
-```text
-[Raspberry Pi 5]
-Pin 1 (3.3V) ---- VCC [SSD1306 OLED]
-Pin 6 (GND)  ---- GND [SSD1306 OLED]
-Pin 3 (SDA)  ---- SDA [SSD1306 OLED]
-Pin 5 (SCL)  ---- SCL [SSD1306 OLED]
-```
-
 ### Pin Connections
 
 For this project, the primary hardware connection is the SSD1306 OLED display via I2C:
@@ -173,6 +122,49 @@ graph TB
 - 128x64 OLED Display (SSD1306)
 - Microphone (for voice input via web browser)
 - MicroSD card (32GB+ recommended)
+
+## 🔧 Raspberry Pi 5 Pinout
+
+The Raspberry Pi 5 uses a 40-pin GPIO header, compatible with previous Raspberry Pi models but with enhanced capabilities. Below is the pinout for reference, focusing on the pins relevant to this AI Assistant project (e.g., I2C for OLED display).
+
+| Pin # | Name        | Description                              | Pin # | Name        | Description                              |
+|-------|-------------|------------------------------------------|-------|-------------|------------------------------------------|
+| 1     | 3.3V        | 3.3V Power                               | 2     | 5V          | 5V Power                                 |
+| 3     | GPIO 2 (SDA)| I2C SDA (Used for OLED)                  | 4     | 5V          | 5V Power                                 |
+| 5     | GPIO 3 (SCL)| I2C SCL (Used for OLED)                  | 6     | GND         | Ground                                   |
+| 7     | GPIO 4      | General Purpose I/O                      | 8     | GPIO 14     | UART TXD                                 |
+| 9     | GND         | Ground                                   | 10    | GPIO 15     | UART RXD                                 |
+| 11    | GPIO 17     | General Purpose I/O                      | 12    | GPIO 18     | PCM Clock (Audio)                        |
+| 13    | GPIO 27     | General Purpose I/O                      | 14    | GND         | Ground                                   |
+| 15    | GPIO 22     | General Purpose I/O                      | 16    | GPIO 23     | General Purpose I/O                      |
+| 17    | 3.3V        | 3.3V Power                               | 18    | GPIO 24     | General Purpose I/O                      |
+| 19    | GPIO 10     | SPI MOSI                                 | 20    | GND         | Ground                                   |
+| 21    | GPIO 9      | SPI MISO                                 | 22    | GPIO 25     | General Purpose I/O                      |
+| 23    | GPIO 11     | SPI SCLK                                 | 24    | GPIO 8      | SPI CE0                                  |
+| 25    | GND         | Ground                                   | 26    | GPIO 7      | SPI CE1                                  |
+| 27    | GPIO 0 (ID_SD)| EEPROM I2C SDA                         | 28    | GPIO 1 (ID_SC)| EEPROM I2C SCL                         |
+| 29    | GPIO 5      | General Purpose I/O                      | 30    | GND         | Ground                                   |
+| 31    | GPIO 6      | General Purpose I/O                      | 32    | GPIO 12     | PWM0                                     |
+| 33    | GPIO 13     | PWM1                                     | 34    | GND         | Ground                                   |
+| 35    | GPIO 19     | PCM Frame Sync                           | 36    | GPIO 16     | General Purpose I/O                      |
+| 37    | GPIO 26     | General Purpose I/O                      | 38    | GPIO 20     | PCM Data In                              |
+| 39    | GND         | Ground                                   | 40    | GPIO 21     | PCM Data Out                             |
+
+**Key Notes**:
+- **I2C Pins**: Pin 3 (GPIO 2, SDA) and Pin 5 (GPIO 3, SCL) are used for the SSD1306 OLED display
+- **Power Pins**: Pins 1 and 17 provide 3.3V, while Pins 2 and 4 provide 5V
+- **Ground Pins**: Multiple ground pins available; Pin 6 is typically used for the OLED GND
+- **GPIO Limitations**: The Raspberry Pi 5 supports up to 3.3V logic levels
+
+### 🔌 Schematic/Wiring Diagram
+
+```text
+[Raspberry Pi 5]                    [SSD1306 OLED Display]
+Pin 1 (3.3V) ----------------------- VCC
+Pin 6 (GND)  ----------------------- GND  
+Pin 3 (SDA)  ----------------------- SDA
+Pin 5 (SCL)  ----------------------- SCL
+```
 
 ## Software Requirements
 
