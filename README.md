@@ -68,7 +68,7 @@ The Raspberry Pi 5 uses a 40-pin GPIO header, compatible with previous Raspberry
 | 21    | GPIO 9      | SPI MISO                                 | 22    | GPIO 25     | General Purpose I/O                      |
 | 23    | GPIO 11     | SPI SCLK                                 | 24    | GPIO 8      | SPI CE0                                  |
 | 25    | GND         | Ground                                   | 26    | GPIO 7      | SPI CE1                                  |
-| 27    | GPIO 0 (ID_SD)| EEPROM I2C SDA                        | 28    | GPIO 1 (ID_SC)| EEPROM I2C SCL                        |
+| 27    | GPIO 0 (ID_SD)| EEPROM I2C SDA                         | 28    | GPIO 1 (ID_SC)| EEPROM I2C SCL                         |
 | 29    | GPIO 5      | General Purpose I/O                      | 30    | GND         | Ground                                   |
 | 31    | GPIO 6      | General Purpose I/O                      | 32    | GPIO 12     | PWM0                                     |
 | 33    | GPIO 13     | PWM1                                     | 34    | GND         | Ground                                   |
@@ -91,13 +91,16 @@ VCC       ->  Pin 1 (3.3V)
 GND       ->  Pin 6 (Ground)
 SDA       ->  Pin 3 (GPIO 2, I2C SDA)
 SCL       ->  Pin 5 (GPIO 3, I2C SCL)
-text**Diagram**:
+
+```text
 [Raspberry Pi 5]
 Pin 1 (3.3V) ---- VCC [SSD1306 OLED]
 Pin 6 (GND)  ---- GND [SSD1306 OLED]
 Pin 3 (SDA)  ---- SDA [SSD1306 OLED]
 Pin 5 (SCL)  ---- SCL [SSD1306 OLED]
-text### Pin Connections
+```
+
+### Pin Connections
 
 For this project, the primary hardware connection is the SSD1306 OLED display via I2C:
 - **VCC**: Connect to Pin 1 (3.3V) for power.
