@@ -177,7 +177,11 @@ Pin 5 (SCL)  ----------------------- SCL
 ### 1. Clone or Download Project
 ```bash
 # If using git
+<<<<<<< HEAD
 git clone https://github.com/ficrammanifur/ai_assistant
+=======
+git clone <https://github.com/ficrammanifur/ai_assistant>
+>>>>>>> 94e7c6b (w)
 cd raspberry-pi-ai-assistant
 
 # Or download and extract the ZIP file
@@ -239,7 +243,6 @@ sudo reboot
 ```bash
 # Activate virtual environment
 source ai_assistant_env/bin/activate
-
 # Run the application
 python app.py
 ```
