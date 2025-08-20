@@ -1,13 +1,4 @@
 # 🤖 AI ASSISTANT FOR RASPBERRY PI 5
-
-<p align="center">
-  <img src="assets/interface.png" alt="AI Assistant Prototype" width="700"/>
-</p>
-
-<p align="center">
-  <em>Sistem AI Assistant komprehensif yang berjalan di Raspberry Pi 5 dengan multiple interface: web browser, terminal, dan ekspresi OLED display.</em>
-</p>
-
 <p align="center">
   <img src="https://img.shields.io/badge/last%20commit-today-brightgreen" />
   <img src="https://img.shields.io/badge/language-Python-blue" />
@@ -19,6 +10,14 @@
   <a href="https://github.com/your-username/raspberry-pi-ai-assistant/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT" />
   </a>
+  
+</p>
+<p align="center">
+  <img src="assets/interface.png" alt="AI Assistant Prototype" width="700"/>
+</p>
+
+<p align="center">
+  <em>Sistem AI Assistant komprehensif yang berjalan di Raspberry Pi 5 dengan multiple interface: web browser, terminal, dan ekspresi OLED display.</em>
 </p>
 
 ---
