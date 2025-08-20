@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# AI Assistant for Raspberry Pi 5 - Setup Script
+# AI Assistant for Raspberry Pi - Setup Script
 # This script installs all dependencies and configures the system
 
-echo "🤖 AI Assistant Setup for Raspberry Pi 5"
+echo "🤖 AI Assistant Setup for Raspberry Pi"
 echo "========================================"
 
 # Check if running on Raspberry Pi
@@ -29,7 +29,10 @@ sudo apt install -y \
     git \
     i2c-tools \
     build-essential \
-    cmake
+    cmake \
+    g++ \
+    make \
+    libopenblas-dev
 
 # Enable I2C interface
 echo "🔌 Configuring I2C interface..."
@@ -58,7 +61,70 @@ pip install -r requirements.txt
 # Create necessary directories
 echo "📁 Creating project directories..."
 mkdir -p models
-mkdir -p data
+mkdir -p database
+
+# Download TinyLlama model if not exists
+if [ ! -f "models/tinyllama-1.1b-chat-v1.0.Q6_K.gguf" ]; then
+    echo "⬇️ Downloading TinyLlama model..."
+    wget https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q6_K.gguf -P models/
+else
+    echo "✅ TinyLlama model already exists in models/tinyllama-1.1b-chat-v1.0.Q6_K.gguf"
+fi
+
+# Initialize database files
+echo "📄 Initializing database files..."
+if [ ! -f "database/prompts.json" ]; then
+    cat > database/prompts.json << EOF
+[
+  {
+    "id": 1,
+    "prompt": "Apa itu AI?",
+    "response": "AI adalah kecerdasan buatan, teknologi yang memungkinkan komputer meniru kemampuan manusia seperti belajar dan memecahkan masalah."
+  },
+  {
+    "id": 2,
+    "prompt": "Siapa penemu Python?",
+    "response": "Guido van Rossum adalah penemu bahasa pemrograman Python, diciptakan pada akhir 1980-an."
+  }
+]
+EOF
+fi
+
+if [ ! -f "database/history.json" ]; then
+    echo "[]" > database/history.json
+fi
+
+if [ ! -f "database/users.json" ]; then
+    cat > database/users.json << EOF
+[
+  {
+    "id": 1,
+    "username": "ficrammanifur",
+    "email": "ficrammanifur@example.com",
+    "created_at": "2025-08-21T00:00:00Z"
+  }
+]
+EOF
+fi
+
+if [ ! -f "database/id_words.txt" ]; then
+    cat > database/id_words.txt << EOF
+apa
+itu
+kecerdasan
+buatan
+python
+raspberry
+menggunakan
+robot
+belajar
+bantu
+membantu
+saya
+ceritain
+joke
+EOF
+fi
 
 # Test I2C connection
 echo "🔍 Testing I2C connection..."
@@ -69,7 +135,7 @@ else
     echo "⚠️  i2cdetect not available, skipping I2C test"
 fi
 
-# Create systemd service file (optional)
+# Create systemd service file
 echo "🔧 Creating systemd service..."
 cat > ai-assistant.service << EOF
 [Unit]
@@ -95,6 +161,8 @@ echo "✅ I2C interface enabled"
 echo "✅ Python virtual environment created"
 echo "✅ Dependencies installed"
 echo "✅ Project directories created"
+echo "✅ TinyLlama model ready at models/tinyllama-1.1b-chat-v1.0.Q6_K.gguf"
+echo "✅ Database files initialized at database/"
 echo ""
 echo "🚀 To start the AI Assistant:"
 echo "   source ai_assistant_env/bin/activate"

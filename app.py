@@ -5,14 +5,15 @@ import json
 from datetime import datetime
 import os
 import sys
+from spellchecker import SpellChecker
 
 # AI Model imports
 try:
-    from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
-    HF_AVAILABLE = True
+    from llama_cpp import Llama
+    LLAMA_AVAILABLE = True
 except ImportError:
-    print("Warning: transformers not installed. Install with: pip install transformers torch")
-    HF_AVAILABLE = False
+    print("Warning: llama-cpp-python not installed. Install with: pip install llama-cpp-python")
+    LLAMA_AVAILABLE = False
 
 # OLED Display import
 try:
@@ -24,13 +25,30 @@ except ImportError:
 
 app = Flask(__name__)
 
+# Initialize spell checker with custom Indonesian word list
+spell = SpellChecker()
+try:
+    with open('database/id_words.txt', 'r', encoding='utf-8') as f:
+        custom_words = f.read().splitlines()
+    spell.word_frequency.load_words(custom_words)
+except FileNotFoundError:
+    print("Warning: id_words.txt not found, using default spell checker.")
+
+def fix_typo(text):
+    """Correct typos in user input using pyspellchecker"""
+    words = text.split()
+    corrected = [spell.correction(w) if spell.correction(w) else w for w in words]
+    return " ".join(corrected)
+
 class AIAssistant:
     def __init__(self):
         self.model = None
-        self.tokenizer = None
-        self.generator = None
         self.oled = None
         self.chat_history = []
+        self.prompts_db = []
+        
+        # Load prompts from database
+        self.load_prompts_db()
         
         # Initialize OLED if available
         if OLED_AVAILABLE:
@@ -44,103 +62,118 @@ class AIAssistant:
         # Initialize AI model
         self.load_ai_model()
     
+    def load_prompts_db(self):
+        """Load prompts from prompts.json"""
+        try:
+            with open('database/prompts.json', 'r', encoding='utf-8') as f:
+                self.prompts_db = json.load(f)
+        except Exception as e:
+            print(f"Error loading prompts.json: {e}")
+            self.prompts_db = []
+    
     def load_ai_model(self):
-        """Load lightweight AI model from Hugging Face"""
-        if not HF_AVAILABLE:
-            print("Transformers not available. Using fallback responses.")
+        """Load TinyLlama model using llama.cpp"""
+        if not LLAMA_AVAILABLE:
+            print("llama-cpp-python not available. Using fallback responses.")
             return
         
         try:
-            print("Loading AI model... This may take a moment.")
+            print("Loading TinyLlama model... This may take a moment.")
             
-            # Use DistilGPT-2 for better performance on Raspberry Pi
-            model_name = "distilgpt2"
+            # Path to the TinyLlama model (replace with LLaMA 3 path when available)
+            model_path = "./models/tinyllama-1.1b-chat-v1.0.Q6_K.gguf"
             
-            # Check if model exists locally
-            model_path = f"./models/{model_name}"
-            if os.path.exists(model_path):
-                print(f"Loading model from local path: {model_path}")
-                self.tokenizer = GPT2Tokenizer.from_pretrained(model_path)
-                self.model = GPT2LMHeadModel.from_pretrained(model_path)
-            else:
-                print(f"Downloading model: {model_name}")
-                self.tokenizer = GPT2Tokenizer.from_pretrained(model_name)
-                self.model = GPT2LMHeadModel.from_pretrained(model_name)
-                
-                # Save model locally for future use
-                os.makedirs("./models", exist_ok=True)
-                self.tokenizer.save_pretrained(model_path)
-                self.model.save_pretrained(model_path)
+            if not os.path.exists(model_path):
+                raise FileNotFoundError(f"Model file not found at {model_path}")
             
-            # Set pad token
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.pad_token = self.tokenizer.eos_token
-            
-            # Create text generation pipeline
-            self.generator = pipeline(
-                'text-generation',
-                model=self.model,
-                tokenizer=self.tokenizer,
-                device=-1,  # Use CPU
-                pad_token_id=self.tokenizer.eos_token_id
+            # Load the model with llama.cpp
+            self.model = Llama(
+                model_path=model_path,
+                n_ctx=512,  # Context length
+                n_threads=4,  # Use 4 CPU threads
+                n_gpu_layers=0,  # CPU-only for Raspberry Pi
+                chat_format="chatml"  # Use TinyLlama's default chat template
             )
             
-            print("AI model loaded successfully!")
+            print("TinyLlama model loaded successfully!")
             
         except Exception as e:
             print(f"Error loading AI model: {e}")
             self.model = None
-            self.tokenizer = None
-            self.generator = None
+    
+    def get_prompt_from_db(self, user_input):
+        """Check if user input matches a prompt in prompts.json"""
+        cleaned_input = fix_typo(user_input.lower())
+        for entry in self.prompts_db:
+            if cleaned_input in entry['prompt'].lower():
+                return entry['response']
+        return None
     
     def generate_response(self, user_input):
-        """Generate AI response with improved constraints"""
+        """Generate AI response with spell correction and database fallback"""
         try:
             # Show thinking expression
             if self.oled:
                 self.oled.show_expression("thinking")
             
-            if self.generator:
-                # Create a conversational prompt with context
-                prompt = f"You are a helpful AI assistant running on a Raspberry Pi. Provide a concise and relevant answer to the following question or statement:\nHuman: {user_input}\nAssistant:"
+            # Correct typos in user input
+            cleaned_input = fix_typo(user_input)
+            
+            # Check prompts.json for a direct match
+            db_response = self.get_prompt_from_db(cleaned_input)
+            if db_response:
+                ai_response = db_response
+            elif self.model:
+                # Build chat history in ChatML format
+                messages = [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful and concise AI assistant running on a Raspberry Pi. Provide accurate, relevant answers in 1-3 sentences. If the input contains typos, respond to the corrected intent."
+                    }
+                ]
+                # Add recent chat history (last 2 interactions)
+                for entry in self.chat_history[-2:]:
+                    messages.append({"role": "user", "content": entry['user']})
+                    messages.append({"role": "assistant", "content": entry['assistant']})
                 
-                # Generate response with stricter parameters
-                response = self.generator(
-                    prompt,
-                    max_new_tokens=30,  # Limit new tokens for concise output
-                    num_return_sequences=1,
-                    temperature=0.6,  # Lower temperature for more coherent responses
-                    top_p=0.9,  # Use top-p sampling to focus on likely tokens
-                    do_sample=True,
-                    pad_token_id=self.tokenizer.eos_token_id,
-                    eos_token_id=self.tokenizer.eos_token_id
+                # Add corrected user input
+                messages.append({"role": "user", "content": cleaned_input})
+                
+                # Generate response using ChatML format
+                response = self.model.create_chat_completion(
+                    messages=messages,
+                    max_tokens=100,
+                    temperature=0.6,
+                    top_k=50,
+                    top_p=0.9,
+                    stop=["<|user|>", "<|assistant|>", "</s>"]
                 )
                 
                 # Extract the assistant's response
-                full_response = response[0]['generated_text']
-                ai_response = full_response.split("Assistant:")[-1].strip()
+                ai_response = response['choices'][0]['message']['content'].strip()
                 
                 # Clean up the response
-                ai_response = ai_response.split("Human:")[0].strip()
-                
-                # Truncate at last complete sentence
                 sentences = ai_response.split('. ')
-                if len(sentences) > 1:
-                    ai_response = '. '.join(sentences[:-1]) + '.' if sentences[-1] == '' else ai_response
+                if len(sentences) > 3:
+                    ai_response = '. '.join(sentences[:3]) + '.'
+                if not ai_response.endswith('.'):
+                    ai_response += '.'
                 
-                # Fallback for empty or nonsensical responses
-                if not ai_response or len(ai_response) < 5:
-                    ai_response = "I'm here to help! Could you please rephrase your question?"
-                
+                # Check if response is too similar to input or too short
+                if cleaned_input.lower() in ai_response.lower() or len(ai_response) < 15:
+                    ai_response = "Could you clarify or provide more details for a better response?"
             else:
-                # Fallback responses when model is not available
+                # Fallback responses
                 fallback_responses = [
                     "I'm here to help! However, the AI model isn't loaded yet.",
                     "That's an interesting question! The AI model is currently unavailable.",
                     "I'd love to help with that, but I'm running in fallback mode right now.",
                     "Great question! Please make sure the AI model is properly installed."
                 ]
-                ai_response = fallback_responses[len(user_input) % len(fallback_responses)]
+                ai_response = fallback_responses[len(cleaned_input) % len(fallback_responses)]
+            
+            # Save to history.json
+            self.save_to_history(user_input, ai_response)
             
             # Show speaking expression
             if self.oled:
@@ -155,16 +188,32 @@ class AIAssistant:
             return "I apologize, but I encountered an error while processing your request."
     
     def add_to_history(self, user_input, ai_response):
-        """Add conversation to history"""
+        """Add conversation to in-memory history"""
         self.chat_history.append({
             "timestamp": datetime.now().isoformat(),
             "user": user_input,
             "assistant": ai_response
         })
-        
         # Keep only last 50 conversations
         if len(self.chat_history) > 50:
             self.chat_history = self.chat_history[-50:]
+    
+    def save_to_history(self, user_input, ai_response):
+        """Save conversation to history.json"""
+        try:
+            history_entry = {
+                "id": len(self.chat_history) + 1,
+                "prompt": user_input,
+                "response": ai_response
+            }
+            with open('database/history.json', 'r+', encoding='utf-8') as f:
+                history = json.load(f)
+                history.append(history_entry)
+                f.seek(0)
+                json.dump(history, f, ensure_ascii=False, indent=2)
+            self.add_to_history(user_input, ai_response)
+        except Exception as e:
+            print(f"Error saving to history.json: {e}")
 
 # Initialize AI Assistant
 assistant = AIAssistant()
@@ -193,9 +242,6 @@ def chat():
         # Generate AI response
         ai_response = assistant.generate_response(user_input)
         
-        # Add to history
-        assistant.add_to_history(user_input, ai_response)
-        
         print(f"[AI]: {ai_response}")
         
         return jsonify({
@@ -209,14 +255,20 @@ def chat():
 
 @app.route('/history')
 def history():
-    """Get chat history"""
-    return jsonify(assistant.chat_history)
+    """Get chat history from history.json"""
+    try:
+        with open('database/history.json', 'r', encoding='utf-8') as f:
+            history = json.load(f)
+        return jsonify(history)
+    except Exception as e:
+        print(f"Error reading history.json: {e}")
+        return jsonify([])
 
 @app.route('/status')
 def status():
     """Get system status"""
     return jsonify({
-        'ai_model_loaded': assistant.generator is not None,
+        'ai_model_loaded': assistant.model is not None,
         'oled_available': assistant.oled is not None,
         'chat_history_count': len(assistant.chat_history)
     })
@@ -224,7 +276,7 @@ def status():
 def terminal_interface():
     """Terminal chat interface"""
     print("\n" + "="*50)
-    print("🤖 AI Assistant Terminal Interface")
+    print("🤖 TinyLlama Assistant Terminal Interface")
     print("Type 'quit' or 'exit' to stop")
     print("="*50 + "\n")
     
@@ -241,7 +293,6 @@ def terminal_interface():
             
             # Generate response
             ai_response = assistant.generate_response(user_input)
-            assistant.add_to_history(user_input, ai_response)
             
             print(f"AI: {ai_response}\n")
             
@@ -256,7 +307,7 @@ if __name__ == '__main__':
     terminal_thread = threading.Thread(target=terminal_interface, daemon=True)
     terminal_thread.start()
     
-    print("Starting AI Assistant...")
+    print("Starting TinyLlama Assistant...")
     print("Web interface will be available at: http://0.0.0.0:5000")
     print("Terminal interface is running in parallel")
     

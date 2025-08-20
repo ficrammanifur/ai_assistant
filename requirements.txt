@@ -6,6 +6,11 @@ Werkzeug==2.3.7
 transformers==4.35.2
 torch==2.1.1
 tokenizers==0.15.0
+accelerate==0.24.1
+safetensors==0.4.0   # recommended untuk load model lebih cepat & aman
+huggingface-hub==0.20.3  # untuk akses model LLaMA3 dari HF Hub
+llama-cpp-python==0.2.28
+pyspellchecker==0.8.3
 
 # OLED Display dependencies
 adafruit-circuitpython-ssd1306==2.12.14
@@ -15,6 +20,3 @@ Pillow==10.1.0
 # Additional utilities
 requests==2.31.0
 numpy==1.24.4
-
-# Optional: For better performance
-accelerate==0.24.1
