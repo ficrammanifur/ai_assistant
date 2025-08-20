@@ -116,14 +116,14 @@ graph TB
 | **Web Browser** | Provide Interface | Render chat UI, handle voice input, display responses |
 | **Terminal** | Command Interface | Accept text input, display AI responses |
 
-## Hardware Requirements
+## 🔧 Hardware Requirements
 
 - Raspberry Pi 5 (4GB+ RAM recommended)
 - 128x64 OLED Display (SSD1306)
 - Microphone (for voice input via web browser)
 - MicroSD card (32GB+ recommended)
 
-## 🔧 Raspberry Pi 5 Pinout
+### Raspberry Pi 5 Pinout
 
 The Raspberry Pi 5 uses a 40-pin GPIO header, compatible with previous Raspberry Pi models but with enhanced capabilities. Below is the pinout for reference, focusing on the pins relevant to this AI Assistant project (e.g., I2C for OLED display).
 
