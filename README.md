@@ -1,7 +1,6 @@
 # 🤖 AI ASSISTANT FOR RASPBERRY PI 5
 
 <p align="center">
-  <img src="https://img.shields.io/badge/last%20commit-today-brightgreen" />
   <img src="https://img.shields.io/badge/language-Python-blue" />
   <img src="https://img.shields.io/badge/platform-Raspberry%20Pi%205-informational" />
   <img src="https://img.shields.io/badge/framework-Flask-orange" />
