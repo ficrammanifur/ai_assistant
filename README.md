@@ -1,4 +1,4 @@
-# 🤖 AI ASSISTANT FOR RASPBERRY PI 5
+<h1 align="center">🤖 AI ASSISTANT FOR RASPBERRY PI 5</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/language-Python-blue" />
