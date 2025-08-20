@@ -1,4 +1,5 @@
 # 🤖 AI ASSISTANT FOR RASPBERRY PI 5
+
 <p align="center">
   <img src="https://img.shields.io/badge/last%20commit-today-brightgreen" />
   <img src="https://img.shields.io/badge/language-Python-blue" />
@@ -10,6 +11,10 @@
   <a href="https://github.com/your-username/raspberry-pi-ai-assistant/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="License: MIT" />
   </a>
+
+<p align="center">
+  <em>A comprehensive AI Assistant project that runs on Raspberry Pi 5 with multiple interfaces: web browser, terminal, and OLED display expressions.</em>
+</p>
   
 </p>
 <p align="center">
@@ -21,8 +26,6 @@
 </p>
 
 ---
-
-A comprehensive AI Assistant project that runs on Raspberry Pi 5 with multiple interfaces: web browser, terminal, and OLED display expressions.
 
 ## Features
 
