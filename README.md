@@ -184,17 +184,8 @@ Pin 5 (SCL)  ----------------------- SCL
 ### 1. Clone or Download Project
 ```bash
 # If using git
-<<<<<<< HEAD
-
 git clone https://github.com/ficrammanifur/ai_assistant
-
-git clone <https://github.com/ficrammanifur/ai_assistant>
-
-=======
-git clone https://github.com/ficrammanifur/ai_assistant
->>>>>>> c8a99e4 (Update README, app.py, setup.sh, templates, and add id_words.txt)
 cd raspberry-pi-ai-assistant
-
 # Or download and extract the ZIP file
 ```
 
